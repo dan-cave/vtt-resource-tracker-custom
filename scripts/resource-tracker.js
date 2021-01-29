@@ -1,4 +1,4 @@
-const RESTRACK_MODULENAME = 'vtt-resource-tracker';
+const RESTRACK_MODULENAME = 'vtt-resource-tracker-custom';
 const RESTRACK_POSITION_SETTING = 'tracker-position'
 const RESTRACK_DEFAULT_ICON = 'icons/svg/cowled.svg';
 
