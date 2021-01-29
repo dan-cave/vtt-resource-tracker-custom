@@ -193,6 +193,13 @@ class resourceTracker {
             resourceContainer.append(resourceIcon);
         }
         else {
+            let resourceIcon = $(`<img src="${res?.icon ?? ''}" data-key="${key}" data-name="${key + '_icon'}" data-edit="img" width="36" height="36" />`);
+
+            resourceIcon.on('click', (e) => {
+                let imgPath = $(e.target).attr('src');
+
+                resourceTracker.getResourceImg(html, $(e.target).attr('data-key'), imgPath);
+            });
             resourceContainer.append($(`<label>${localizedName + (res && res.label && res.label.length > 0 ? ` (${res.label})` : '')}</label>`));
         }
 
