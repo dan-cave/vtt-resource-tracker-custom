@@ -190,10 +190,9 @@ class resourceTracker {
                 resourceTracker.getResourceImg(html, $(e.target).attr('data-key'), imgPath);
             });
             resourceContainer.append(resourceName);
-            resourceContainer.append(resourceIcon);
         }
         else {
-            let resourceIcon = $(`<img src="${res?.icon ?? ''}" data-key="${key}" data-name="${key + '_icon'}" data-edit="img" width="36" height="36" />`);
+            let resourceIcon = $(`<img src="${RESTRACK_DEFAULT_ICON}" data-key="${key}" data-name="${key + '_icon'}" data-edit="img" width="36" height="36" />`);
 
             resourceIcon.on('click', (e) => {
                 let imgPath = $(e.target).attr('src');
@@ -202,6 +201,7 @@ class resourceTracker {
             });
             resourceContainer.append($(`<label>${localizedName + (res && res.label && res.label.length > 0 ? ` (${res.label})` : '')}</label>`));
         }
+        resourceContainer.append(resourceIcon);
 
         let resourceFormfield = $('<div class="form-fields"></div>');
         let resourceCheckbox = $(`<input type="checkbox" id="restrack_resource_${key}" data-name="${key}" ${checked ? 'checked' : ''} />`);
