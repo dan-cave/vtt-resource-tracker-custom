@@ -33,6 +33,7 @@ class resourceTracker {
                 value = actor.data.data.resources[key].value;
                 max = actor.data.data.resources[key].max;
                 label = actor.data.data.resources[key].label;
+                icon = res.icon;
             }
             let resourceInput = $(`<input type="text" data-key="${key}" data-module="${RESTRACK_MODULENAME}" min="0" ${(max?.length > 0 ? 'max = "' + max + '"' : '')} placeholder="0" value="${value ?? ''}" title="${label}" />`);
 
@@ -40,7 +41,7 @@ class resourceTracker {
                 //check if image exists
                 $.get(icon)
                     .done(function () {
-                        let resourceIcon = $(`<img src="${icon}" width="36" height="36" title="${label}">`);
+                        let resourceIcon = $(`<img src="${icon}" width="36" height="36" title="${label}" style="filter: invert(1);">`);
                         row.addClass('resource-tracker-row-withIcon').addClass('resource-tracker-icon');
                         resourceInput.before(resourceIcon);
                     })
@@ -131,13 +132,13 @@ class resourceTracker {
                     let res = {
                         'tracked': true
                     };
-
                     if (key.includes('restrack_custom_')) {
                         res.label = html.find(`input[data-name="${key}"]`).val();
-                        res.val = null;
-                        res.isCustom = true;
-                        res.icon = html.find(`img[data-key="${key}"]`).attr('src');
+                    } else {
+                        res.label = html.find(`label[data-name="${key}"]`).text().match(/(?<=\()([^\)]+)(?=\))/g);
                     }
+                    res.icon = html.find(`img[data-key="${key}"]`).attr('src');
+
                     entity.token.setFlag(RESTRACK_MODULENAME, key, res);
                 }
                 else {
@@ -177,9 +178,9 @@ class resourceTracker {
         }
 
         let checked = entity.token.getFlag(RESTRACK_MODULENAME, key)?.tracked ?? false;
+        resourceContainer.addClass('resource-tracker-icon');
 
         if (key.includes('restrack_custom_')) {
-            resourceContainer.addClass('resource-tracker-icon');
             let customLabel = entity.token.getFlag(RESTRACK_MODULENAME, key)?.label ?? '';
             let resourceName = $(`<input type="text" data-name="${key}" placeholder="${game.i18n.localize('ResTrack.settings.token.addCustomPlaceholder')}" value="${customLabel}"/>`);
             let resourceIcon = $(`<img src="${res?.icon ?? ''}" data-key="${key}" data-name="${key + '_icon'}" data-edit="img" width="36" height="36" />`);
@@ -190,18 +191,20 @@ class resourceTracker {
                 resourceTracker.getResourceImg(html, $(e.target).attr('data-key'), imgPath);
             });
             resourceContainer.append(resourceName);
+            resourceContainer.append(resourceIcon);
         }
         else {
-            let resourceIcon = $(`<img src="${RESTRACK_DEFAULT_ICON}" data-key="${key}" data-name="${key + '_icon'}" data-edit="img" width="36" height="36" />`);
+            let resourceIcon = $(`<img src="${res?.icon ?? RESTRACK_DEFAULT_ICON}" data-key="${key}" data-name="${key + '_icon'}" data-edit="img" width="36" height="36" />`);
 
             resourceIcon.on('click', (e) => {
                 let imgPath = $(e.target).attr('src');
-
                 resourceTracker.getResourceImg(html, $(e.target).attr('data-key'), imgPath);
             });
-            resourceContainer.append($(`<label>${localizedName + (res && res.label && res.label.length > 0 ? ` (${res.label})` : '')}</label>`));
+
+
+            resourceContainer.append($(`<label data-name="${key}">${localizedName + (res && res.label && res.label.length > 0 ? ` (${res.label})` : '')}</label>`));
+            resourceContainer.append(resourceIcon);
         }
-        resourceContainer.append(resourceIcon);
 
         let resourceFormfield = $('<div class="form-fields"></div>');
         let resourceCheckbox = $(`<input type="checkbox" id="restrack_resource_${key}" data-name="${key}" ${checked ? 'checked' : ''} />`);
